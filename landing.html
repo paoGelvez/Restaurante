@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comelones - Restaurante Gourmet</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="./imagenesRestaurante/logor.png" alt="Logo Comelones" class="logo-img">
+            <div class="logo-text">Comelones<span>.</span></div>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#menu">Menú</a></li>
+            <li><a href="#nosotros">Nosotros</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+            <li><a href="#reserva" class="btn-reserva-nav">Reservar</a></li>
+        </ul>
+    </nav>
+
+    <section id="inicio" class="carousel-container">
+        <div class="slider">
+            <div class="slide active">
+                <img src="./imagenesRestaurante/Cocinero.jpg" alt="Nuestro chef estrella terminando un plato">
+                <div class="info">
+                    <h1>Sabor Auténtico</h1>
+                    <p>Descubre la verdadera esencia de la cocina artesanal.</p>
+                    <a href="#menu" class="btn-carousel">Ver Menú</a>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="./imagenesRestaurante/cena.jpg" alt="Nuestros mejores platos">
+                <div class="info">
+                    <h1>Ambiente Único</h1>
+                    <p>El lugar perfecto para tus momentos especiales.</p>
+                    <a href="#reserva" class="btn-carousel">Reservar Mesa</a>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="./imagenesRestaurante/maridaje.jpg" alt="Experiencias de Maridaje">
+                <div class="info">
+                    <h1>Experiencia Gourmet</h1>
+                    <p>Bebidas y postres que sorprenderán tus sentidos.</p>
+                    <a href="#menu" class="btn-carousel">Explorar</a>
+                </div>
+            </div>
+        </div>
+
+        <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+        <button class="next" onclick="changeSlide(1)">&#10095;</button>
+
+        <div class="dots-container">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+        </div>
+    </section>
+
+    <section class="quick-access-bar">
+        <div class="quick-access-container">
+            
+            <a href="#menu" class="quick-card">
+                <div class="icon-circle">
+                    <i class="fas fa-utensils"></i> </div>
+                <span>Menú</span>
+            </a>
+
+            <a href="#reserva" class="quick-card">
+                <div class="icon-circle">
+                    <i class="fas fa-calendar-alt"></i> </div>
+                <span>Reservas</span>
+            </a>
+
+            <a href="#resenas" class="quick-card">
+                <div class="icon-circle">
+                    <i class="fas fa-star"></i> </div>
+                <span>Reseñas</span>
+            </a>
+
+            <a href="#contacto" class="quick-card">
+                <div class="icon-circle">
+                    <i class="fas fa-phone-alt"></i> </div>
+                <span>Contacto</span>
+            </a>
+
+        </div>
+    </section>
+
+    <section id="menu" class="menu-section">
+        <div class="menu-header">
+            <h1 class="titulo-principal">Nuestro Menú Gastronómico</h1>
+            <p class="menu-subtitle">Descubre nuestras creaciones culinarias seleccionadas especialmente para deleitarte</p>
+        </div>
+
+        <div class="filtros">
+            <button class="btn-filtro active" onclick="filtrarMenu('Todos')">Todos</button>
+            <button class="btn-filtro" onclick="filtrarMenu('Entradas')">Entradas</button>
+            <button class="btn-filtro" onclick="filtrarMenu('Platos Fuertes')">Platos Fuertes</button>
+            <button class="btn-filtro" onclick="filtrarMenu('Bebidas')">Bebidas</button>
+        </div>
+
+        <div id="contenedor-menu" class="grid-menu">
+        </div>
+
+        <div class="download-menu-container">
+            <button class="btn-download-menu" onclick="descargarMenu()">
+                <div class="menu-icon-wrapper">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <span>Descargar Menú</span>
+                <div class="btn-glow"></div>
+            </button>
+        </div>
+    </section>
+
+    <section id="nosotros" class="contenedor-nosotros">
+        <div class="texto-nosotros">
+            <h2>Nuestra Cocina</h2>
+            <p>En Comelones nos apasiona crear momentos inolvidables a través de ingredientes frescos y recetas tradicionales con un toque moderno.</p>
+        </div>
+        <div class="carrusel-eventos">
+            <div class="slider-eventos">
+                <div class="slide-evento active">
+                    <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600" alt="Evento 1">
+                </div>
+                <div class="slide-evento">
+                    <img src="https://images.unsplash.com/photo-1504674900174-2155a13de972?w=600" alt="Evento 2">
+                </div>
+                <div class="slide-evento">
+                    <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600" alt="Evento 3">
+                </div>
+                <div class="slide-evento">
+                    <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600" alt="Evento 4">
+                </div>
+            </div>
+            
+            <button class="prev-evento" onclick="cambiarSlideEvento(-1)">&#10094;</button>
+            <button class="next-evento" onclick="cambiarSlideEvento(1)">&#10095;</button>
+            
+            <div class="dots-eventos">
+                <span class="dot-evento active" onclick="seleccionarSlideEvento(0)"></span>
+                <span class="dot-evento" onclick="seleccionarSlideEvento(1)"></span>
+                <span class="dot-evento" onclick="seleccionarSlideEvento(2)"></span>
+                <span class="dot-evento" onclick="seleccionarSlideEvento(3)"></span>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="reserva" class="reserva-section">
+        <div class="reserva-header">
+            <h2>Realizar Reserva</h2>
+            <p>Vive una experiencia gastronómica inolvidable en Comelones</p>
+        </div>
+
+        <div class="reserva-container">
+            <!-- Formulario de Reserva -->
+            <form class="form-reserva">
+                <div class="form-group">
+                    <label>Nombre Completo *</label>
+                    <input type="text" placeholder="Ej: Juan Pérez" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Teléfono *</label>
+                    <input type="tel" placeholder="+57 123 456 7890" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha *</label>
+                        <input type="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora *</label>
+                        <input type="time" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Personas *</label>
+                        <select required>
+                            <option value="">Selecciona</option>
+                            <option>1 persona</option>
+                            <option>2 personas</option>
+                            <option>3 personas</option>
+                            <option>4 personas</option>
+                            <option>5 personas</option>
+                            <option>6+ personas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Mesa</label>
+                        <select>
+                            <option value="">Cualquier mesa</option>
+                            <option>Mesa Standard</option>
+                            <option>Mesa VIP</option>
+                            <option>Mesa Terraza</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ocasión Especial (Opcional)</label>
+                    <select>
+                        <option value="">Selecciona una ocasión</option>
+                        <option>Cumpleaños</option>
+                        <option>Aniversario</option>
+                        <option>Cena Romántica</option>
+                        <option>Reunión Empresarial</option>
+                        <option>Otra</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Preferencias o Alergias (Opcional)</label>
+                    <textarea placeholder="Déjanos saber cualquier preferencia o alergia..." rows="3"></textarea>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="terminos" required>
+                    <label for="terminos">Autorizo a Comelones a contactarme para confirmar mi reserva</label>
+                </div>
+
+                <button type="submit" class="btn-reservar">Confirmar Reserva</button>
+            </form>
+
+            <!-- Información Importante -->
+            <div class="info-reserva">
+                <h3>Información Importante</h3>
+                
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h4>Horarios</h4>
+                        <p>Lunes - Viernes: 12:00 PM - 10:00 PM</p>
+                        <p>Sábado - Domingo: 11:30 AM - 11:00 PM</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-users"></i>
+                    <div>
+                        <h4>Capacidad</h4>
+                        <p>Mínimo 1 persona</p>
+                        <p>Máximo 50 personas</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-ban"></i>
+                    <div>
+                        <h4>Cancelación</h4>
+                        <p>Cancelar con 24 horas de anticipación</p>
+                        <p>Sin costo de cancelación</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <div>
+                        <h4>Contacto Directo</h4>
+                        <p>Teléfono: +57 123 456 7890</p>
+                        <p>WhatsApp: +57 123 456 7890</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h4>Qué Esperar</h4>
+                        <p>Confirmación en 2 horas</p>
+                        <p>Recordatorio 24 horas antes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="resenas" class="resenas-section">
+        <div class="resenas-header">
+            <h2>Reseñas de Clientes</h2>
+            <p>Las opiniones que validan nuestra pasión por la excelencia culinaria</p>
+            <div class="stats-resenas">
+                <div class="stat-item">
+                    <span class="stat-number" id="total-resenas">0</span>
+                    <span class="stat-label">Reseñas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="promedio-calificacion">0</span>
+                    <span class="stat-label">Calificación</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="resenas-container">
+            <!-- Formulario para Agregar Reseña -->
+            <div class="nueva-resena-card">
+                <div class="nueva-resena-header">
+                    <i class="fas fa-pen-fancy"></i>
+                    <h3>Comparte tu Experiencia</h3>
+                </div>
+                <form class="form-resena" id="form-nueva-resena">
+                    <div class="form-group">
+                        <label>Tu Nombre *</label>
+                        <input type="text" class="input-nombre" placeholder="Ej: María García" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email (Opcional)</label>
+                        <input type="email" class="input-email" placeholder="tu@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tu Comentario *</label>
+                        <textarea class="textarea-comentario" placeholder="Comparte tu experiencia, platos favoritos, ambiente..." rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Calificación General *</label>
+                        <div class="stars-input-container">
+                            <div class="stars-input">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                            <input type="hidden" class="calificacion-input" value="0" required>
+                            <span class="calificacion-texto">Selecciona tu experiencia</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-publicar-resena">
+                        <i class="fas fa-paper-plane"></i>
+                        Publicar Reseña
+                    </button>
+                </form>
+            </div>
+
+            <!-- Listado de Reseñas -->
+            <div class="listado-resenas-card">
+                <div class="listado-header">
+                    <i class="fas fa-star"></i>
+                    <h3>Lo que dicen nuestros clientes</h3>
+                </div>
+                <div id="contenedor-resenas" class="resenas-grid">
+                    <div class="sin-resenas">
+                        <i class="fas fa-comments"></i>
+                        <p>Aún no hay reseñas. ¡Sé el primero en compartir tu experiencia!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacto" class="contacto-section">
+        <div class="contacto-container">
+            <div class="contacto-header">
+                <h2>Ubicación & Contacto</h2>
+                <p class="contacto-subtitle">Ruitoque Condominio, Bucaramanga</p>
+            </div>
+
+            <div class="contacto-content">
+                <!-- Información de Contacto -->
+                <div class="contacto-info-card">
+                    <h3><i class="fas fa-map-marker-alt"></i> Ubicación</h3>
+                    <div class="info-item">
+                        <span class="info-label">Dirección</span>
+                        <p>Ruitoque Condominio<br>Bucaramanga, Santander<br>Colombia</p>
+                    </div>
+
+                    <h3 style="margin-top: 30px;"><i class="fas fa-clock"></i> Horarios</h3>
+                    <div class="info-item">
+                        <p><strong>Lunes a Jueves:</strong> 11:00 AM - 11:00 PM</p>
+                        <p><strong>Viernes y Sábado:</strong> 11:00 AM - 12:00 AM</p>
+                        <p><strong>Domingo:</strong> 11:00 AM - 10:00 PM</p>
+                    </div>
+
+                    <h3 style="margin-top: 30px;"><i class="fas fa-phone"></i> Contacto</h3>
+                    <div class="info-item">
+                        <p><i class="fas fa-phone-alt"></i> <a href="tel:+571234567890">+57 123 456 7890</a></p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:info@comelones.com">info@comelones.com</a></p>
+                    </div>
+
+                    <h3 style="margin-top: 30px;"><i class="fas fa-share-alt"></i> Síguenos</h3>
+                    <div class="redes-contacto">
+                        <a href="#" class="red-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="red-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="red-link"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+
+                <!-- Mapa Google Maps -->
+                <div class="mapa-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.5684217828894!2d-73.12094092346948!3d7.120650392689531!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e6a2a5c5c5c5c5d%3A0x5c5c5c5c5c5c5c5c!2sRuitoque%20Condominio!5e0!3m2!1ses!2sco!4v1713177600000" 
+                            width="100%" 
+                            height="500" 
+                            style="border:0; border-radius: 12px;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-contenido">
+            <div class="footer-grid">
+                <!-- Logo y Descripción -->
+                <div class="footer-brand">
+                    <img src="./imagenesRestaurante/logor.png" alt="Logo Comelones" class="footer-logo">
+                    <h3>COMELONES</h3>
+                    <p class="footer-desc">Experiencia gastronómica gourmet<br>en el corazón de Ruitoque</p>
+                    <div class="footer-ubicacion">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Ruitoque Condominio, Bucaramanga</span>
+                    </div>
+                </div>
+
+                <!-- Enlaces Rápidos -->
+                <div class="footer-section">
+                    <h4>Navegación</h4>
+                    <ul class="footer-links">
+                        <li><a href="#inicio"><i class="fas fa-chevron-right"></i> Inicio</a></li>
+                        <li><a href="#menu"><i class="fas fa-chevron-right"></i> Menú</a></li>
+                        <li><a href="#reserva"><i class="fas fa-chevron-right"></i> Reservar</a></li>
+                        <li><a href="#resenas"><i class="fas fa-chevron-right"></i> Reseñas</a></li>
+                    </ul>
+                </div>
+
+                <!-- Información de Contacto -->
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <div class="footer-contact">
+                        <p><i class="fas fa-phone"></i> <a href="tel:+571234567890">+57 123 456 7890</a></p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:info@comelones.com">info@comelones.com</a></p>
+                        <p><i class="fas fa-clock"></i> Lun-Jue: 11AM - 11PM</p>
+                        <p style="font-size: 0.85rem; margin-top: 5px;">Vie-Sab: 11AM - 12AM</p>
+                    </div>
+                </div>
+
+                <!-- Redes Sociales -->
+                <div class="footer-section">
+                    <h4>Síguenos</h4>
+                    <div class="footer-redes">
+                        <a href="#" class="footer-red-link" title="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="footer-red-link" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="footer-red-link" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#" class="footer-red-link" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divisor -->
+            <div class="footer-divider"></div>
+
+            <!-- Copyright y Links -->
+            <div class="footer-bottom">
+                <p class="footer-copy">
+                    <i class="fas fa-copyright"></i> 2026 Restaurante Comelones. Proyecto Académico.
+                </p>
+                <div class="footer-legal">
+                    <a href="#">Política de Privacidad</a>
+                    <span class="separator">•</span>
+                    <a href="#">Términos y Condiciones</a>
+                    <span class="separator">•</span>
+                    <a href="#">Política de Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+  <script src="landing.js"></script>
+  
+</body>
+</html>
