@@ -49,7 +49,10 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const resenas = await Resena.find().sort({ creadaEn: -1 });
-        res.json(resenas);
+        res.json({ 
+            resenas: resenas,
+            total: resenas.length 
+        });
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener reseñas' });
     }
