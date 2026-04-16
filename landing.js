@@ -372,9 +372,49 @@ function inicializarSistemaResenas() {
     const formulario = document.getElementById('form-nueva-resena');
     formulario.addEventListener('submit', agregarResena);
     
-    // Renderizar reseñas iniciales
-    renderizarResenas();
-    actualizarEstadisticas();
+    // Cargar reseñas desde la base de datos
+    cargarResenasDelServidor();
+}
+
+// Función para cargar reseñas del servidor
+async function cargarResenasDelServidor() {
+    try {
+        const response = await fetch('http://localhost:5000/api/resenas');
+        const datos = await response.json();
+        
+        if (response.ok && datos.resenas) {
+            // El servidor devuelve un objeto con array de reseñas
+            if (Array.isArray(datos.resenas) && datos.resenas.length > 0) {
+                resenas = datos.resenas.map(resena => ({
+                    id: resena._id,
+                    nombre: resena.nombre,
+                    email: resena.email,
+                    comentario: resena.comentario,
+                    calificacion: resena.calificacion,
+                    fecha: new Date(resena.creadaEn)
+                }));
+                
+                console.log('✅ Reseñas cargadas del servidor:', resenas.length);
+            } else {
+                console.log('No hay reseñas en la base de datos aún');
+                resenas = [];
+            }
+            
+            // Renderizar reseñas y actualizar estadísticas
+            renderizarResenas();
+            actualizarEstadisticas();
+        } else {
+            console.log('Error al cargar reseñas del servidor');
+            renderizarResenas();
+            actualizarEstadisticas();
+        }
+    } catch (error) {
+        console.warn('Advertencia: No se pudieron cargar las reseñas del servidor. Usando reseñas locales.');
+        console.error('Error:', error);
+        // Usar reseñas locales si el servidor no está disponible
+        renderizarResenas();
+        actualizarEstadisticas();
+    }
 }
 
 // Función para agregar una nueva reseña
@@ -397,65 +437,43 @@ async function agregarResena(e) {
         alert('Por favor completa todos los campos requeridos.');
         return;
     }
-
-    // Mostrar cargando
+    
+    // Crear objeto de reseña
+    const nuevaResena = {
+        id: resenas.length + 1,
+        nombre: nombre,
+        comentario: comentario,
+        calificacion: calificacion,
+        fecha: new Date()
+    };
+    
+    // Agregar a la lista
+    resenas.unshift(nuevaResena);
+    
+    // Limpiar el formulario
+    document.querySelector('.input-nombre').value = '';
+    document.querySelector('.input-email').value = '';
+    document.querySelector('.textarea-comentario').value = '';
+    document.querySelector('.calificacion-input').value = '0';
+    
+    // Resetear estrellas
+    document.querySelectorAll('.stars-input .star').forEach(e => e.classList.remove('activa'));
+    document.querySelector('.calificacion-texto').textContent = 'Selecciona tu experiencia';
+    document.querySelector('.calificacion-texto').style.color = '#888';
+    
+    // Mostrar animación de éxito
     const boton = e.target.querySelector('.btn-publicar-resena');
     const textoOriginal = boton.innerHTML;
-    boton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicando...';
-    boton.disabled = true;
-
-    try {
-        // Enviar datos al servidor
-        const response = await fetch('http://localhost:5000/api/resenas', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                nombre,
-                email,
-                comentario,
-                calificacion
-            })
-        });
-
-        const datos = await response.json();
-
-        if (response.ok) {
-            // Mostrar mensaje de éxito
-            boton.innerHTML = '<i class="fas fa-check"></i> ¡Reseña Publicada!';
-            boton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)';
-            
-            // Limpiar formulario
-            document.querySelector('.input-nombre').value = '';
-            document.querySelector('.input-email').value = '';
-            document.querySelector('.textarea-comentario').value = '';
-            document.querySelector('.calificacion-input').value = '0';
-            
-            // Resetear estrellas
-            document.querySelectorAll('.stars-input .star').forEach(e => e.classList.remove('activa'));
-            document.querySelector('.calificacion-texto').textContent = 'Selecciona tu experiencia';
-            document.querySelector('.calificacion-texto').style.color = '#888';
-
-            // Volver al estado normal después de 2 segundos
-            setTimeout(() => {
-                boton.innerHTML = textoOriginal;
-                boton.style.background = '';
-                boton.disabled = false;
-                // Recargar reseñas desde el servidor
-                cargarResenas();
-            }, 2000);
-        } else {
-            alert(datos.error || 'Error al publicar la reseña');
-            boton.innerHTML = textoOriginal;
-            boton.disabled = false;
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error al conectar con el servidor. Asegúrate de que esté corriendo (npm start)');
+    boton.innerHTML = '<i class="fas fa-check"></i> ¡Reseña Publicada!';
+    boton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)';
+    
+    setTimeout(() => {
         boton.innerHTML = textoOriginal;
-        boton.disabled = false;
-    }
+        boton.style.background = '';
+        // Renderizar reseñas y actualizar estadísticas
+        renderizarResenas();
+        actualizarEstadisticas();
+    }, 2000);
 }
 
 // Función para renderizar todas las reseñas
