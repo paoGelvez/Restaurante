@@ -33,6 +33,13 @@ document.querySelector('.carousel-container').addEventListener('mouseenter', () 
     clearInterval(autoSlide);
 });
 
+// Reanudar el auto-cambio cuando el usuario sale del carrusel
+document.querySelector('.carousel-container').addEventListener('mouseleave', () => {
+    autoSlide = setInterval(() => {
+        changeSlide(1);
+    }, 6000);
+});
+
 
 // 1. Definición de los objetos (Data)
 const platos = [
@@ -294,36 +301,112 @@ if (carruselEventos) {
 let resenas = [];
 
 // Inicializar el sistema de reseñas
-document.addEventListener('DOMContentLoaded', function() {
-    // Cargar reseñas desde el servidor
-    cargarResenas();
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('📋 DOMContentLoaded - Iniciando sistema de reseñas');
+    
+    // Esperar a que se carguen las reseñas ANTES de inicializar el formulario
+    await cargarResenas();
     
     // Inicializar formulario si existe
     if (document.getElementById('form-nueva-resena')) {
+        console.log('✅ Inicializando formulario de reseñas');
         inicializarSistemaResenas();
     }
 });
 
 // Función para cargar reseñas desde el servidor
 async function cargarResenas() {
+    console.log('🔄🔄🔄 INICIANDO cargarResenas() 🔄🔄🔄');
+    
     try {
-        const response = await fetch('http://localhost:5000/api/resenas');
-        const data = await response.json();
-        resenas = data || [];
+        console.log('🔄 Cargando reseñas desde servidor...');
+        const response = await fetch('http://localhost:5500/api/resenas');
+        
+        console.log('📡 Status de respuesta:', response.status);
+        console.log('📡 OK:', response.ok);
+        
+        // Verificar que la respuesta sea correcta
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Error HTTP:', response.status, errorText);
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+        
+        // Intentar parsear JSON
+        let data;
+        try {
+            data = await response.json();
+            console.log('✅ JSON parseado correctamente');
+        } catch (parseError) {
+            console.error('❌ Error al parsear JSON:', parseError);
+            console.error('❌ Response text:', await response.text());
+            throw parseError;
+        }
+        
+        console.log('📥 DATO COMPLETO recibido:', JSON.stringify(data, null, 2));
+        console.log('📥 Tipo de data:', typeof data);
+        console.log('📥 ¿Es array?:', Array.isArray(data));
+        console.log('📥 data.resenas:', data.resenas);
+        console.log('📥 data.total:', data.total);
+        
+        // El servidor devuelve {resenas: [...], total: ...}
+        let resenasDelServidor = [];
+        
+        if (data && Array.isArray(data.resenas)) {
+            resenasDelServidor = data.resenas;
+            console.log('✅ Resenas encontradas en data.resenas:', resenasDelServidor.length);
+        } else if (Array.isArray(data)) {
+            resenasDelServidor = data;
+            console.log('✅ Data es un array directo:', resenasDelServidor.length);
+        } else {
+            console.warn('⚠️ Formato inesperado:', data);
+            resenasDelServidor = [];
+        }
+        
+        console.log('📊 Reseñas extraídas:', resenasDelServidor);
+        
+        // Transformar los datos de MongoDB a formato frontend
+        if (resenasDelServidor.length > 0) {
+            resenas = resenasDelServidor.map(resena => {
+                console.log('Transformando reseña:', resena);
+                return {
+                    id: resena._id,
+                    nombre: resena.nombre,
+                    email: resena.email,
+                    comentario: resena.comentario,
+                    calificacion: resena.calificacion,
+                    creadaEn: resena.creadaEn,
+                    fecha: new Date(resena.creadaEn)
+                };
+            });
+        } else {
+            resenas = [];
+        }
+        
+        console.log('✅ Reseñas transformadas:', resenas);
+        console.log('📍 Renderizando reseñas...');
+        
         renderizarResenas();
         actualizarEstadisticas();
+        
+        console.log('✅ Reseñas cargadas exitosamente:', resenas.length);
     } catch (error) {
-        console.error('Error al cargar reseñas:', error);
-        alert('No se pudieron cargar las reseñas. Asegúrate que el servidor esté corriendo.');
+        console.error('❌ Error completo al cargar reseñas:', error);
+        console.error('❌ Mensaje:', error.message);
+        console.error('❌ Stack trace:', error.stack);
+        resenas = [];
+        renderizarResenas();
+        actualizarEstadisticas();
     }
 }
 
-// Función para inicializar el sistema
+// Función para inicializar el sistema de reseñas
 function inicializarSistemaResenas() {
-    // Event listeners para las estrellas
     const estrellas = document.querySelectorAll('.stars-input .star');
     const inputCalificacion = document.querySelector('.calificacion-input');
     const textoCalificacion = document.querySelector('.calificacion-texto');
+    
+    if (!estrellas.length) return;
     
     estrellas.forEach(estrella => {
         // Al hacer hover
@@ -344,80 +427,30 @@ function inicializarSistemaResenas() {
             inputCalificacion.value = valor;
             textoCalificacion.textContent = `Excelente (${valor}/5)`;
             textoCalificacion.style.color = '#D4AF37';
-            
+        });
+    });
+    
+    // Reset de estrellas al salir del contenedor
+    const starsContainer = document.querySelector('.stars-input-container');
+    if (starsContainer) {
+        starsContainer.addEventListener('mouseleave', function() {
+            const valorGuardado = inputCalificacion.value;
             estrellas.forEach((e, index) => {
-                if (index < valor) {
+                if (index < valorGuardado) {
                     e.classList.add('activa');
                 } else {
                     e.classList.remove('activa');
                 }
             });
         });
-    });
-    
-    // Reset de estrellas al salir del contenedor
-    const starsContainer = document.querySelector('.stars-input-container');
-    starsContainer.addEventListener('mouseleave', function() {
-        const valorGuardado = inputCalificacion.value;
-        estrellas.forEach((e, index) => {
-            if (index < valorGuardado) {
-                e.classList.add('activa');
-            } else {
-                e.classList.remove('activa');
-            }
-        });
-    });
+    }
     
     // Manejador para enviar la reseña
     const formulario = document.getElementById('form-nueva-resena');
-    formulario.addEventListener('submit', agregarResena);
-    
-    // Cargar reseñas desde la base de datos
-    cargarResenasDelServidor();
-}
-
-// Función para cargar reseñas del servidor
-async function cargarResenasDelServidor() {
-    try {
-        const response = await fetch('http://localhost:5000/api/resenas');
-        const datos = await response.json();
-        
-        if (response.ok && datos.resenas) {
-            // El servidor devuelve un objeto con array de reseñas
-            if (Array.isArray(datos.resenas) && datos.resenas.length > 0) {
-                resenas = datos.resenas.map(resena => ({
-                    id: resena._id,
-                    nombre: resena.nombre,
-                    email: resena.email,
-                    comentario: resena.comentario,
-                    calificacion: resena.calificacion,
-                    fecha: new Date(resena.creadaEn)
-                }));
-                
-                console.log('✅ Reseñas cargadas del servidor:', resenas.length);
-            } else {
-                console.log('No hay reseñas en la base de datos aún');
-                resenas = [];
-            }
-            
-            // Renderizar reseñas y actualizar estadísticas
-            renderizarResenas();
-            actualizarEstadisticas();
-        } else {
-            console.log('Error al cargar reseñas del servidor');
-            renderizarResenas();
-            actualizarEstadisticas();
-        }
-    } catch (error) {
-        console.warn('Advertencia: No se pudieron cargar las reseñas del servidor. Usando reseñas locales.');
-        console.error('Error:', error);
-        // Usar reseñas locales si el servidor no está disponible
-        renderizarResenas();
-        actualizarEstadisticas();
+    if (formulario) {
+        formulario.addEventListener('submit', agregarResena);
     }
 }
-
-// Función para agregar una nueva reseña
 async function agregarResena(e) {
     e.preventDefault();
     
@@ -437,48 +470,80 @@ async function agregarResena(e) {
         alert('Por favor completa todos los campos requeridos.');
         return;
     }
-    
-    // Crear objeto de reseña
-    const nuevaResena = {
-        id: resenas.length + 1,
-        nombre: nombre,
-        comentario: comentario,
-        calificacion: calificacion,
-        fecha: new Date()
-    };
-    
-    // Agregar a la lista
-    resenas.unshift(nuevaResena);
-    
-    // Limpiar el formulario
-    document.querySelector('.input-nombre').value = '';
-    document.querySelector('.input-email').value = '';
-    document.querySelector('.textarea-comentario').value = '';
-    document.querySelector('.calificacion-input').value = '0';
-    
-    // Resetear estrellas
-    document.querySelectorAll('.stars-input .star').forEach(e => e.classList.remove('activa'));
-    document.querySelector('.calificacion-texto').textContent = 'Selecciona tu experiencia';
-    document.querySelector('.calificacion-texto').style.color = '#888';
-    
-    // Mostrar animación de éxito
+
+    // Mostrar cargando
     const boton = e.target.querySelector('.btn-publicar-resena');
     const textoOriginal = boton.innerHTML;
-    boton.innerHTML = '<i class="fas fa-check"></i> ¡Reseña Publicada!';
-    boton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)';
-    
-    setTimeout(() => {
+    boton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicando...';
+    boton.disabled = true;
+
+    try {
+        // Enviar datos al servidor
+        const response = await fetch('http://localhost:5500/api/resenas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nombre,
+                email,
+                comentario,
+                calificacion
+            })
+        });
+
+        const datos = await response.json();
+
+        if (response.ok) {
+            // Mostrar mensaje de éxito
+            boton.innerHTML = '<i class="fas fa-check"></i> ¡Reseña Publicada!';
+            boton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)';
+            
+            // Limpiar formulario
+            document.querySelector('.input-nombre').value = '';
+            document.querySelector('.input-email').value = '';
+            document.querySelector('.textarea-comentario').value = '';
+            document.querySelector('.calificacion-input').value = '0';
+            
+            // Resetear estrellas
+            document.querySelectorAll('.stars-input .star').forEach(e => e.classList.remove('activa'));
+            document.querySelector('.calificacion-texto').textContent = 'Selecciona tu experiencia';
+            document.querySelector('.calificacion-texto').style.color = '#888';
+
+            // Volver al estado normal después de 2 segundos
+            setTimeout(() => {
+                boton.innerHTML = textoOriginal;
+                boton.style.background = '';
+                boton.disabled = false;
+                // Recargar reseñas desde el servidor
+                cargarResenas();
+            }, 2000);
+        } else {
+            alert(datos.error || 'Error al publicar la reseña');
+            boton.innerHTML = textoOriginal;
+            boton.disabled = false;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al conectar con el servidor. Asegúrate de que esté corriendo (npm start)');
         boton.innerHTML = textoOriginal;
-        boton.style.background = '';
-        // Renderizar reseñas y actualizar estadísticas
-        renderizarResenas();
-        actualizarEstadisticas();
-    }, 2000);
+        boton.disabled = false;
+    }
 }
 
 // Función para renderizar todas las reseñas
 function renderizarResenas() {
     const contenedor = document.getElementById('contenedor-resenas');
+    
+    console.log('🎨 Renderizando reseñas...');
+    console.log('📦 Contenedor encontrado:', !!contenedor);
+    console.log('📊 Array resenas:', resenas);
+    console.log('📈 Cantidad de reseñas:', resenas.length);
+    
+    if (!contenedor) {
+        console.error('❌ No se encontró el contenedor con ID "contenedor-resenas"');
+        return;
+    }
     
     if (resenas.length === 0) {
         contenedor.innerHTML = `
@@ -487,6 +552,7 @@ function renderizarResenas() {
                 <p>Aún no hay reseñas. ¡Sé el primero en compartir tu experiencia!</p>
             </div>
         `;
+        console.log('✅ Mostrado mensaje de "sin reseñas"');
         return;
     }
     
@@ -494,9 +560,13 @@ function renderizarResenas() {
     contenedor.innerHTML = '';
     
     // Renderizar cada reseña
-    resenas.forEach(resena => {
+    resenas.forEach((resena, index) => {
+        console.log(`Renderizando reseña ${index + 1}:`, resena);
+        
         const estrellas = '★'.repeat(resena.calificacion) + '☆'.repeat(5 - resena.calificacion);
-        const fecha = formatearFecha(resena.creadaEn || resena.fecha);
+        // Convertir string ISO a Date si es necesario
+        const fechaObj = typeof resena.creadaEn === 'string' ? new Date(resena.creadaEn) : resena.fecha;
+        const fecha = formatearFecha(fechaObj);
         
         const tarjetaResena = document.createElement('div');
         tarjetaResena.className = 'resena-card';
@@ -510,6 +580,8 @@ function renderizarResenas() {
         `;
         contenedor.appendChild(tarjetaResena);
     });
+    
+    console.log('✅ Todas las reseñas renderizadas correctamente');
 }
 
 // Función para actualizar estadísticas
@@ -539,14 +611,58 @@ function formatearFecha(fecha) {
 // Inicializar el formulario de reserva
 document.addEventListener('DOMContentLoaded', function() {
     const formularioReserva = document.querySelector('.form-reserva');
+    const inputFecha = document.getElementById('fecha-reserva');
+    
     if (formularioReserva) {
         formularioReserva.addEventListener('submit', enviarReserva);
     }
+    
+    // Establecer fecha mínima como hoy
+    if (inputFecha) {
+        const hoy = new Date();
+        const fechaMinima = hoy.toISOString().split('T')[0];
+        inputFecha.setAttribute('min', fechaMinima);
+        
+        // Validar fecha cuando cambia
+        inputFecha.addEventListener('change', validarFechaReserva);
+    }
 });
+
+// Función para validar la fecha de reserva
+function validarFechaReserva() {
+    const inputFecha = document.getElementById('fecha-reserva');
+    const errorMensaje = document.getElementById('error-fecha');
+    const fechaSeleccionada = new Date(inputFecha.value + 'T00:00:00');
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    
+    if (fechaSeleccionada < hoy) {
+        errorMensaje.textContent = '❌ Por favor selecciona una fecha futura. No puedes reservar en fechas pasadas.';
+        errorMensaje.classList.add('show');
+        inputFecha.style.borderColor = '#ff6b6b';
+        return false;
+    } else {
+        errorMensaje.classList.remove('show');
+        errorMensaje.textContent = '';
+        inputFecha.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+        return true;
+    }
+}
 
 // Función para enviar la reserva al servidor
 async function enviarReserva(e) {
     e.preventDefault();
+
+    // Validar fecha antes de enviar
+    const inputFecha = document.getElementById('fecha-reserva');
+    const errorMensaje = document.getElementById('error-fecha');
+    
+    if (!validarFechaReserva()) {
+        errorMensaje.textContent = '❌ Por favor selecciona una fecha futura. No puedes reservar en fechas pasadas.';
+        errorMensaje.classList.add('show');
+        inputFecha.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
 
     // Obtener valores del formulario
     const nombre = document.querySelector('.form-reserva input[type="text"]').value.trim();
@@ -583,7 +699,7 @@ async function enviarReserva(e) {
 
     try {
         // Enviar datos al servidor
-        const response = await fetch('http://localhost:5000/api/reservas/crear', {
+        const response = await fetch('http://localhost:5500/api/reservas/crear', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
