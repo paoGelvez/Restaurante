@@ -36,6 +36,11 @@ app.get('/api/test', (req, res) => {
   res.json({ mensaje: '✅ Servidor funcionando correctamente' });
 });
 
+// Ruta principal - servir landing.html
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/landing.html');
+});
+
 // Puerto
 const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => {
