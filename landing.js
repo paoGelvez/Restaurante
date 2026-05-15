@@ -381,7 +381,7 @@ async function cargarResenas() {
     
     try {
         console.log('🔄 Cargando reseñas desde servidor...');
-        const response = await fetch('/api/resenas');
+        const response = await fetch('http://localhost:5500/api/resenas');
         
         console.log('📡 Status de respuesta:', response.status);
         console.log('📡 OK:', response.ok);
@@ -760,7 +760,7 @@ async function enviarReserva(e) {
 
     try {
         // Enviar datos al servidor
-        const response = await fetch('/api/reservas/crear', {
+        const response = await fetch('http://localhost:5500/api/reservas/crear', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
