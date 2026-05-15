@@ -150,7 +150,10 @@ const platos = [
 // 2. Selección de elementos del DOM
 const contenedor = document.getElementById('contenedor-menu');
 
-// 3. Función principal para renderizar el menú
+// 3. Estado de la aplicación
+let productoSeleccionado = null;
+
+// 4. Función principal para renderizar el menú
 function renderizarMenu(listaPlatos) {
     // Limpiamos el contenedor
     contenedor.innerHTML = "";
@@ -174,11 +177,69 @@ function renderizarMenu(listaPlatos) {
                 </div>
             </div>
         `;
+        
+        // Agregar evento click para seleccionar producto
+        card.addEventListener('click', () => seleccionarProducto(plato));
+        
         contenedor.appendChild(card);
     });
 }
 
-// 4. Función para filtrar por categoría
+// 5. Función para seleccionar un producto
+function seleccionarProducto(plato) {
+    productoSeleccionado = plato;
+    mostrarModal();
+}
+
+// 6. Función para mostrar el modal
+function mostrarModal() {
+    if (!productoSeleccionado) return;
+    
+    const modal = document.getElementById('modal-producto');
+    const modalBody = document.getElementById('modal-body');
+    
+    modalBody.innerHTML = `
+        <div class="modal-producto-header">
+            <div class="modal-producto-imagen">
+                <img src="${productoSeleccionado.imagen}" alt="${productoSeleccionado.nombre}">
+            </div>
+            <div class="modal-producto-info">
+                <h2>${productoSeleccionado.nombre}</h2>
+                <span class="categoria">${productoSeleccionado.categoria}</span>
+                <p class="descripcion">${productoSeleccionado.descripcion}</p>
+                <div class="precio">$${productoSeleccionado.precio.toLocaleString()}</div>
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+}
+
+// 7. Función para cerrar el modal
+function cerrarModal() {
+    const modal = document.getElementById('modal-producto');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restaurar scroll
+    productoSeleccionado = null;
+}
+
+// 8. Cerrar modal al hacer click fuera
+window.addEventListener('click', (event) => {
+    const modal = document.getElementById('modal-producto');
+    if (event.target === modal) {
+        cerrarModal();
+    }
+});
+
+// 9. Cerrar modal con tecla Escape
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        cerrarModal();
+    }
+});
+
+// 10. Función para filtrar por categoría
 function filtrarMenu(categoria) {
     if (categoria === 'Todos') {
         renderizarMenu(platos);
