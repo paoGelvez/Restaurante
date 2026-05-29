@@ -381,7 +381,7 @@ async function cargarResenas() {
     
     try {
         console.log('🔄 Cargando reseñas desde servidor...');
-        const response = await fetch('http://localhost:5500/api/resenas');
+        const response = await fetch('/api/resenas');
         
         console.log('📡 Status de respuesta:', response.status);
         console.log('📡 OK:', response.ok);
@@ -759,8 +759,9 @@ async function enviarReserva(e) {
     boton.disabled = true;
 
     try {
-        // Enviar datos al servidor
-        const response = await fetch('http://localhost:5500/api/reservas/crear', {
+        console.log('📤 Enviando reserva:', { nombre, email, telefono, fecha, hora, personas });
+
+        const response = await fetch('/api/reservas/crear', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -779,17 +780,22 @@ async function enviarReserva(e) {
             })
         });
 
+        console.log('📥 Estado respuesta:', response.status);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP Error: ${response.status}`);
+        }
+
         const datos = await response.json();
+        console.log('✅ Reserva exitosa:', datos);
 
         if (datos.success) {
-            // Mostrar mensaje de éxito
             boton.textContent = '✅ ¡Reserva Confirmada!';
             boton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)';
-            
-            // Limpiar formulario
+
             document.querySelector('.form-reserva').reset();
 
-            // Volver al estado normal después de 3 segundos
             setTimeout(() => {
                 boton.textContent = textoOriginal;
                 boton.style.background = '';
@@ -798,13 +804,11 @@ async function enviarReserva(e) {
 
             alert(datos.message || '¡Reserva realizada exitosamente!');
         } else {
-            alert(datos.message || 'Error al procesar la reserva');
-            boton.textContent = textoOriginal;
-            boton.disabled = false;
+            throw new Error(datos.message || 'Error desconocido');
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('Error al conectar con el servidor. Asegúrate de que esté corriendo (npm start)');
+        console.error('❌ Error en reserva:', error.message);
+        alert(error.message || 'Error al conectar con el servidor');
         boton.textContent = textoOriginal;
         boton.disabled = false;
     }

@@ -41,8 +41,26 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/landing.html');
 });
 
-// Puerto
 const PORT = process.env.PORT || 5500;
-app.listen(PORT, () => {
+const servidor = app.listen(PORT, () => {
   console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
+});
+
+// Manejo de cierre graceful
+process.on('SIGTERM', () => {
+  console.log('📴 SIGTERM recibido, cerrando servidor...');
+  servidor.close(() => {
+    console.log('✅ Servidor cerrado');
+    mongoose.connection.close();
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('📴 SIGINT recibido, cerrando servidor...');
+  servidor.close(() => {
+    console.log('✅ Servidor cerrado');
+    mongoose.connection.close();
+    process.exit(0);
+  });
 });
