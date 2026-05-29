@@ -381,7 +381,7 @@ async function cargarResenas() {
     
     try {
         console.log('🔄 Cargando reseñas desde servidor...');
-        const response = await fetch('http://localhost:5500/api/resenas');
+        const response = await fetch('/api/resenas');
         
         console.log('📡 Status de respuesta:', response.status);
         console.log('📡 OK:', response.ok);
